@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.yh.shop.dao.SkuDao">
+    <resultMap id="BaseResultMap" type="org.yh.shop.model.Sku">
+        <id column="sku_id" jdbcType="INTEGER" property="skuId"/>
+        <result column="sku_properties" jdbcType="VARCHAR" property="skuProperties"/>
+        <result column="sku_name" jdbcType="VARCHAR" property="skuName"/>
+        <result column="sku_pic" jdbcType="VARCHAR" property="skuPic"/>
+        <result column="sku_price" jdbcType="DECIMAL" property="skuPrice"/>
+        <result column="sku_stock" jdbcType="VARCHAR" property="skuStock"/>
+        <result column="sku_sale_num" jdbcType="INTEGER" property="skuSaleNum"/>
+        <result column="shop_id" jdbcType="INTEGER" property="shopId"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+        <result column="version" jdbcType="INTEGER" property="version"/>
+    </resultMap>
+    <resultMap id="MapWithSpuSkuRel" type="org.yh.shop.model.vo.SpuSkuRelVo" extends="BaseResultMap">
+        <collection property="spuSkuRels" ofType="org.yh.shop.model.SpuSkuRel">
+            <result property="propNameId" column="prop_name_id"/>
+            <result property="propValueId" column="prop_value_id"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+        sku_id, sku_properties, sku_name, sku_pic, sku_price, sku_stock, sku_sale_num, shop_id,
+    `status`, create_date, update_date, version
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sku
+        where sku_id = #{skuId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByPropSpuId" resultMap="MapWithSpuSkuRel">
+        select prop_name_id, prop_value_id, s.sku_id, sku_properties, sku_pic, sku_price
+        from spu_sku_rel ssr inner join sku s on
+                spu_id = #{spuId} and ssr.sku_id = s.sku_id
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from sku
+        where sku_id = #{skuId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="sku_id" keyProperty="skuId" parameterType="org.yh.shop.model.Sku"
+            useGeneratedKeys="true">
+        insert into sku (sku_properties, sku_name, sku_pic,
+                         sku_price, sku_stock, sku_sale_num,
+                         shop_id, `status`, create_date,
+                         update_date, version)
+        values (#{skuProperties,jdbcType=VARCHAR}, #{skuName,jdbcType=VARCHAR}, #{skuPic,jdbcType=VARCHAR},
+                #{skuPrice,jdbcType=DECIMAL}, #{skuStock,jdbcType=VARCHAR}, #{skuSaleNum,jdbcType=INTEGER},
+                #{shopId,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, #{createDate,jdbcType=TIMESTAMP},
+                #{updateDate,jdbcType=TIMESTAMP}, #{version,jdbcType=INTEGER})
+    </insert>
+    <insert id="insertSelective" keyColumn="sku_id" keyProperty="skuId" parameterType="org.yh.shop.model.Sku"
+            useGeneratedKeys="true">
+        insert into sku
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="skuProperties != null">
+                sku_properties,
+            </if>
+            <if test="skuName != null">
+                sku_name,
+            </if>
+            <if test="skuPic != null">
+                sku_pic,
+            </if>
+            <if test="skuPrice != null">
+                sku_price,
+            </if>
+            <if test="skuStock != null">
+                sku_stock,
+            </if>
+            <if test="skuSaleNum != null">
+                sku_sale_num,
+            </if>
+            <if test="shopId != null">
+                shop_id,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="skuProperties != null">
+                #{skuProperties,jdbcType=VARCHAR},
+            </if>
+            <if test="skuName != null">
+                #{skuName,jdbcType=VARCHAR},
+            </if>
+            <if test="skuPic != null">
+                #{skuPic,jdbcType=VARCHAR},
+            </if>
+            <if test="skuPrice != null">
+                #{skuPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="skuStock != null">
+                #{skuStock,jdbcType=VARCHAR},
+            </if>
+            <if test="skuSaleNum != null">
+                #{skuSaleNum,jdbcType=INTEGER},
+            </if>
+            <if test="shopId != null">
+                #{shopId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.yh.shop.model.Sku">
+        update sku
+        <set>
+            <if test="skuProperties != null">
+                sku_properties = #{skuProperties,jdbcType=VARCHAR},
+            </if>
+            <if test="skuName != null">
+                sku_name = #{skuName,jdbcType=VARCHAR},
+            </if>
+            <if test="skuPic != null">
+                sku_pic = #{skuPic,jdbcType=VARCHAR},
+            </if>
+            <if test="skuPrice != null">
+                sku_price = #{skuPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="skuStock != null">
+                sku_stock = #{skuStock,jdbcType=VARCHAR},
+            </if>
+            <if test="skuSaleNum != null">
+                sku_sale_num = #{skuSaleNum,jdbcType=INTEGER},
+            </if>
+            <if test="shopId != null">
+                shop_id = #{shopId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                version = #{version,jdbcType=INTEGER},
+            </if>
+        </set>
+        where sku_id = #{skuId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.yh.shop.model.Sku">
+        update sku
+        set sku_properties = #{skuProperties,jdbcType=VARCHAR},
+            sku_name       = #{skuName,jdbcType=VARCHAR},
+            sku_pic        = #{skuPic,jdbcType=VARCHAR},
+            sku_price      = #{skuPrice,jdbcType=DECIMAL},
+            sku_stock      = #{skuStock,jdbcType=VARCHAR},
+            sku_sale_num   = #{skuSaleNum,jdbcType=INTEGER},
+            shop_id        = #{shopId,jdbcType=INTEGER},
+            `status`       = #{status,jdbcType=TINYINT},
+            create_date    = #{createDate,jdbcType=TIMESTAMP},
+            update_date    = #{updateDate,jdbcType=TIMESTAMP},
+            version        = #{version,jdbcType=INTEGER}
+        where sku_id = #{skuId,jdbcType=INTEGER}
+    </update>
+</mapper>

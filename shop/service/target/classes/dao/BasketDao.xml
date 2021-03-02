@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.yh.shop.dao.BasketDao">
+  <resultMap id="BaseResultMap" type="org.yh.shop.model.Basket">
+    <id column="basket_id" jdbcType="INTEGER" property="basketId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="sku_id" jdbcType="INTEGER" property="skuId" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="shop_id" jdbcType="INTEGER" property="shopId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+  <resultMap id="MapWithSku" type="org.yh.shop.model.vo.BasketVo" extends="BaseResultMap">
+     <association property="sku" javaType="org.yh.shop.model.Sku">
+       <id property="skuId" column="sku_id"/>
+         <result property="skuName" column="sku_name"/>
+          <result property="skuPic" column="sku_pic"/>
+       <result property="skuPrice" column="sku_price"/>
+     </association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    basket_id, user_id, sku_id, num, shop_id, `status`, update_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from basket
+    where basket_id = #{basketId,jdbcType=INTEGER}
+  </select>
+    <select id="findBasketById" resultMap="MapWithSku">
+        select b.basket_id,b.sku_id,b.num ,s.sku_id,s.sku_name,s.sku_pic,s.sku_price from basket b inner join sku s
+             on b.user_id=#{userId} and b.sku_id=s.sku_id
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from basket
+    where basket_id = #{basketId,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByIds" parameterType="integer">
+       delete from basket where basket_id in
+      <foreach collection="array" item="item" open="(" separator="," close=")">
+          #{item}
+      </foreach>
+    </delete>
+    <insert id="insert" keyColumn="basket_id" keyProperty="basketId" parameterType="org.yh.shop.model.Basket" useGeneratedKeys="true">
+    insert into basket (user_id, sku_id, num, 
+      shop_id, `status`, update_date
+      )
+    values (#{userId,jdbcType=INTEGER}, #{skuId,jdbcType=INTEGER}, #{num,jdbcType=INTEGER}, 
+      #{shopId,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, #{updateDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="basket_id" keyProperty="basketId" parameterType="org.yh.shop.model.Basket" useGeneratedKeys="true">
+    insert into basket
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="skuId != null">
+        sku_id,
+      </if>
+      <if test="num != null">
+        num,
+      </if>
+      <if test="shopId != null">
+        shop_id,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="skuId != null">
+        #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="num != null">
+        #{num,jdbcType=INTEGER},
+      </if>
+      <if test="shopId != null">
+        #{shopId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.yh.shop.model.Basket">
+    update basket
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="skuId != null">
+        sku_id = #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="num != null">
+        num = #{num,jdbcType=INTEGER},
+      </if>
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where basket_id = #{basketId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.yh.shop.model.Basket">
+    update basket
+    set user_id = #{userId,jdbcType=INTEGER},
+      sku_id = #{skuId,jdbcType=INTEGER},
+      num = #{num,jdbcType=INTEGER},
+      shop_id = #{shopId,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=TINYINT},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where basket_id = #{basketId,jdbcType=INTEGER}
+  </update>
+  <update id="update">
+    update basket set num=#{num} where basket_id=#{basketId}
+  </update>
+</mapper>
